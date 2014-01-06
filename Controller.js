@@ -74,6 +74,7 @@ Controller.prototype.intervalQueueForTransaction=function(){
     self.debugLog('*****intervalQueueForTransaction');
 
     clearTimeout(self.intervalQueueForTransaction_Timeout);
+
     var i=0;
     for(var transId in self.cacheTransaction){
         i++;
@@ -344,6 +345,22 @@ Controller.prototype.intervalQueueForTransaction=function(){
                     self.debugLog(this._id+':'+'*****transaction handle sql command successfully!');
                 }
 
+                if(this._rollbackWhenError){
+                    self._logErr(trans._id+':'+'*****transaction rollback when error!');
+                    this._connection.rollback(function(err){
+                        self._logErr(err);
+                        if(err){
+                            self.debugLog(this._id+':'+'*****transaction rollback when error failed!');
+                        }else{
+                            self.debugLog(this._id+':'+'*****transaction rollback when error succeed!');
+                        }
+                    }.bind(this));
+                    //trans._doing = false;
+                    this._autoCommit = false;
+                    this._resetBeginTime();
+                    this._connection.release();
+                    this._connection = null;
+                }
 
                 if(conErr){
                     this._dequeueAll(conErr,function(){

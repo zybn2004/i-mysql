@@ -1,6 +1,6 @@
 {
   "name": "i-mysql",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/zybn2004/i-mysql.git"
@@ -25,5 +25,6 @@
     "mysql"
   ],
   "author": "zhangyanbing",
-  "license": "BSD-2-Clause"
+  "license": "BSD-2-Clause",
+  "readmeFilename": "readme.md"
 }

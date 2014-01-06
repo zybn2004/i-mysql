@@ -36,6 +36,7 @@ function Transaction(controller/*,globalCb*/){
     this._connection = null;
     this._doing = false;
     this._callbacking = false;
+    this._rollbackWhenError = true;
     /*if(globalCb&&typeof globalCb == "function"){
         this._globalCallback = globalCb;
     }*/
@@ -217,6 +218,12 @@ Transaction.prototype.begin=function(cb){
 }
 
 Transaction.prototype.commit=function(cb){
+    if(typeof cb != "function"){
+        cb = function(err){
+            //_logErr(err);
+        };
+    }
+
     if(this._callbacking){//must call in callback immediately,it cann't be called when async!!
         if(this._commitCommand||this._rollbackCommand){
             this._forceCommit(cb);
@@ -242,11 +249,7 @@ Transaction.prototype.commit=function(cb){
         return this;
     }
     var self = this;
-    if(typeof cb != "function"){
-        cb = function(err){
-            //_logErr(err);
-        };
-    }
+
     var _cb = function(err){
         //this._doing = false;
         //rollbackCommand.call(this);
@@ -270,6 +273,11 @@ Transaction.prototype.commit=function(cb){
 }
 
 Transaction.prototype.rollback=function(cb){
+    if(typeof cb != "function"){
+        cb = function(err){
+            //_logErr(err);
+        };
+    }
     if(this._callbacking){//must call in callback immediately,it cann't be called when async!!
         if(this._commitCommand||this._rollbackCommand){
             this._forceRollback(cb);
@@ -296,11 +304,7 @@ Transaction.prototype.rollback=function(cb){
         return this;
     }
     var self = this;
-    if(typeof cb != "function"){
-        cb = function(err){
-            //_logErr(err);
-        };
-    }
+
     var _cb = function(err){
         //this._doing = false;
         //rollbackCommand.call(this);
