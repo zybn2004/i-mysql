@@ -173,6 +173,7 @@ function chooseDb(){
 }
 
 var testTable = iMysql.table(chooseDb,'test_table');
+```
 
 动态指定表名获得一个table对象：
 ```js
@@ -232,7 +233,6 @@ testTable.insert({fields:['id','c1'],values:[[3,'t3'],[4,'t4']]},function(err){
         console.log(arguments);
     }
 });
-
 ```
 
 ###6.table对象执行select
@@ -347,6 +347,7 @@ function chooseDb(){
 }
 
 var trans1 = iMysql.transaction(chooseDb);
+```
 
 从指定数据库中获得一个指定事务id的transaction对象：
 ```js
