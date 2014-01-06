@@ -18,7 +18,7 @@ npm install i-mysql
 
 ###一、数据库配置
 i-mysql必须在执行config之后才可以进行其它操作。
-function config(array/json) config方法可接收如上例子中的数组，也可以是只有单个数据库配置的json对象（这个时候就不存在数据库切换的情况了）。
+function config(array/json) config方法可接收如下例子中的数组，也可以是只有单个数据库配置的json对象（这个时候就不存在数据库切换的情况了）。
 
 ```js
 var iMysql = require('i-mysql');
