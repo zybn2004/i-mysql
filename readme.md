@@ -60,8 +60,8 @@ iMysql.defaultDb(chooseDb);
     ②可选参数options：用来填充sql的对象。
     ③可选参数cb：执行sql之后的回调函数。
 
-1.简单数据库对象的获得途径
-=======================
+###1.简单数据库对象的获得途径
+==========================
 获得一个简单数据库执行对象：
 ```js
 var defaultDbObj = iMysql.db();//db方法没有传入时，i-mysql会根据默认的数据库获得一个简单数据库执行对象
@@ -81,22 +81,22 @@ function chooseDb(){
 var dbObj = iMysql.db(chooseDb);
 ```
 
-2.简单数据库对象获取当下所在的数据库索引
-===================================
+###2.简单数据库对象获取当下所在的数据库索引
+======================================
 ```js
 var db1Obj = iMysql.db(1);
 console.log(db1Obj.getDbIndex());
 ```
 
-3.简单数据库对象切换数据库
-=======================
+###3.简单数据库对象切换数据库
+==========================
 ```js
 var db1Obj = iMysql.db(1);
 db1Obj.switch(0);
 ```
 
-4.简单数据库对象执行sql
-=====================
+###4.简单数据库对象执行sql
+========================
 ```js
 var db1Obj = iMysql.db(1);
 db1Obj.sql('select c1 from test_table where id = ?','3',function(err){
@@ -108,8 +108,8 @@ db1Obj.sql('select c1 from test_table where id = ?','3',function(err){
 });
 ```
 
-5.简单数据库对象连缀写法
-=====================
+###5.简单数据库对象连缀写法
+========================
 ```js
 var db1Obj = iMysql.db(1);
 db1Obj.sql('select c1 from test_table where id = ?','3',function(err){
@@ -152,8 +152,8 @@ db1Obj.sql('select c1 from test_table where id = ?','3',function(err){
     ①可选参数options：{where:...}，where支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串（where为json对象时只支持and的拼接）。
     ②可选参数cb：执行sql之后的回调函数，该回调函数的参数同mysql包的query方法中cb的参数。
 
-1.table对象获得途径
-==================
+###1.table对象获得途径
+=====================
 从默认数据库中获得一个table对象：
 ```js
 var testTable = iMysql.table('test_table');
@@ -181,29 +181,29 @@ function chooseTableName(){
 var testTable = iMysql.table(1,chooseTableName);
 ```
 
-2.table对象获取表名
-==================
+###2.table对象获取表名
+=====================
 ```js
 var testTable = iMysql.table('test_table');
 console.log(testTable.getTableName());
 ```
 
-3.table对象获取当下所在的数据库索引
-================================
+###3.table对象获取当下所在的数据库索引
+===================================
 ```js
 var testTable = iMysql.table('test_table');
 console.log(testTable.getDbIndex());
 ```
 
-4.table对象切换数据库
-====================
+###4.table对象切换数据库
+=======================
 ```js
 var testTable = iMysql.table('test_table');
 testTable.switch(0);
 ```
 
-5.table对象执行insert
-====================
+###5.table对象执行insert
+========================
 ```js
 var testTable = iMysql.table('test_table');
 //使用data插入
@@ -233,8 +233,8 @@ testTable.insert({fields:['id','c1'],values:[[3,'t3'],[4,'t4']]},function(err){
 
 ```
 
-6.table对象执行select
-====================
+###6.table对象执行select
+========================
 ```js
 var testTable = iMysql.table('test_table');
 //查询所有数据
@@ -255,8 +255,8 @@ testTable.select({fieldset:'count(*) as countNum',fields:['id','c1'],where:'id<1
 });
 ```
 
-7.table对象执行update
-====================
+###7.table对象执行update
+========================
 ```js
 var testTable = iMysql.table('test_table');
 //使用data修改
@@ -277,8 +277,8 @@ testTable.update({fields:['id','c1'],values:[2,'update_value2'],where:{id:3}},fu
 });
 ```
 
-8.table对象执行delete
-====================
+###8.table对象执行delete
+========================
 ```js
 var testTable = iMysql.table('test_table');
 testTable.delete({where:{id:3}},function(err){
@@ -291,8 +291,8 @@ testTable.delete({where:{id:3}},function(err){
 ```
 
 
-9.table对象连缀写法
-==================
+###9.table对象连缀写法
+=====================
 ```js
 var testTable = iMysql.table('test_table');
 testTable.insert({data:{id:1,c1:'t1'}},function(err){
@@ -327,8 +327,8 @@ testTable.insert({data:{id:1,c1:'t1'}},function(err){
     ②可选参数options：用来填充sql的对象。
     ③可选参数cb：执行sql之后的回调函数。
 
-1.transaction对象获得途径
-========================
+###1.transaction对象获得途径
+===========================
 从默认数据库中获得一个transaction对象：
 ```js
 var trans1 = iMysql.transaction();
@@ -356,22 +356,22 @@ function chooseTransId(){
 var trans1 = iMysql.transaction(1,chooseTransId);
 ```
 
-2.transaction对象获取事务id
-==========================
+###2.transaction对象获取事务id
+=============================
 ```js
 var trans1 = iMysql.transaction();
 console.log(trans1.getId());
 ```
 
-3.transaction对象获取当下所在的数据库索引
-=====================================
+###3.transaction对象获取当下所在的数据库索引
+=========================================
 ```js
 var trans1 = iMysql.transaction();
 console.log(trans1.getDbIndex());
 ```
 
-4.transaction对象自动提交
-========================
+###4.transaction对象自动提交
+===========================
 判断transaction对象事务是否超时：
 ```js
 var trans1 = iMysql.transaction();
@@ -384,8 +384,8 @@ var trans1 = iMysql.transaction();
 console.log(trans1.autoCommit(5000));
 ```
 
-5.transaction对象自动销毁
-========================
+###5.transaction对象自动销毁
+===========================
 判断transaction对象是否应该被销毁：
 ```js
 var trans1 = iMysql.transaction();
@@ -398,15 +398,15 @@ var trans1 = iMysql.transaction();
 console.log(trans1.destroy(60000));
 ```
 
-6.transaction对象切换数据库
-=========================
+###6.transaction对象切换数据库
+=============================
 ```js
 var trans1 = iMysql.transaction();
 trans1.switch(1);//切换数据库之后事务id通常会与切换之前的事务id不同
 ```
 
-7.transaction对象提交事务
-=========================
+###7.transaction对象提交事务
+===========================
 注意：一定要注意在一个事务代码书写到最后时加上commit或者rollback的调用，以保证事务的完整性，否则会在占用一段时间的连接后自动提交事务！
 ```js
 var trans1 = iMysql.transaction();
@@ -435,8 +435,8 @@ trans1.commit(function(err){
 });
 ```
 
-8.transaction对象回滚事务
-=========================
+###8.transaction对象回滚事务
+===========================
 ```js
 var trans1 = iMysql.transaction();
 trans1.sql('insert into test_table(c1)values(\'insert_value1\')',function(err){
@@ -479,8 +479,8 @@ trans1.commit(function(err){
 });
 ```
 
-9.transaction对象包装table
-=========================
+###9.transaction对象包装table
+=============================
 transaction对象使用table对象进行包装：
 ```js
 var testTable = iMysql.table('test_table');
@@ -512,8 +512,8 @@ var trans1 = iMysql.transaction();
 trans1.table(chooseTable);
 ```
 
-10.transaction对象使用table对象的insert、select、update、delete
-=============================================================
+###10.transaction对象使用table对象的insert、select、update、delete
+================================================================
 注意：在调用了transaction的sql方法之后就不能再次使用insert、select、update、delete这些方法了，只能通过再次调用transaction的table方法后才能再次使用！
 ```js
 var trans1 = iMysql.transaction();
@@ -534,8 +534,8 @@ trans1.commit(function(err){
 });
 ```
 
-11.transaction对象执行sql
-========================
+###11.transaction对象执行sql
+============================
 ```js
 var trans1 = iMysql.transaction();
 trans1.sql('insert into test_table(c1)values(\'insert_value4\')',function(err){
@@ -554,8 +554,8 @@ trans1.commit(function(err){
 });
 ```
 
-12.transaction对象连缀写法
-=========================
+###12.transaction对象连缀写法
+============================
 ```js
 var trans1 = iMysql.transaction();
 trans1.switch(1).sql('insert into test_table(c1)values(\'insert_value1\')',function(err){
