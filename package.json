@@ -1,0 +1,20 @@
+{
+  "name": "i-mysql",
+  "version": "0.0.2",
+  "description": "a powerful nodejs module, we called be i-mysql",
+  "main": "index.js",
+  "dependencies": {
+    "big-integer": "~1.1.5",
+    "moment": "~2.5.0",
+    "mysql": "~2.0.0-rc2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "i-mysql"
+  ],
+  "author": "zhangyanbing",
+  "license": "BSD-2-Clause"
+}
