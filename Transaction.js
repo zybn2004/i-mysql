@@ -38,8 +38,8 @@ function Transaction(controller/*,globalCb*/){
     this._callbacking = false;
     this._rollbackWhenError = true;
     /*if(globalCb&&typeof globalCb == "function"){
-        this._globalCallback = globalCb;
-    }*/
+     this._globalCallback = globalCb;
+     }*/
 }
 
 function emitExceptionWhenHasDestroyed(){
@@ -128,23 +128,23 @@ Transaction.prototype.table = function(_obj){
 }
 
 /*
-function commitCommand(cb){
-    if(this._connection&&this._connection.state!="disconnected"){
-        this._connection.commit(cb);
-    }
-}
-function rollbackCommand(cb){
-    if(this._connection&&this._connection.state!="disconnected"){
-        this._connection.rollback(cb);
-    }
-}
+ function commitCommand(cb){
+ if(this._connection&&this._connection.state!="disconnected"){
+ this._connection.commit(cb);
+ }
+ }
+ function rollbackCommand(cb){
+ if(this._connection&&this._connection.state!="disconnected"){
+ this._connection.rollback(cb);
+ }
+ }
 
-function beginCommand(cb){
-    if(this._connection&&this._connection.state!="disconnected"){
-        this._connection.beginTransaction(cb);
-    }
-}
-*/
+ function beginCommand(cb){
+ if(this._connection&&this._connection.state!="disconnected"){
+ this._connection.beginTransaction(cb);
+ }
+ }
+ */
 
 Transaction.prototype.sql = function(sql,options,cb){
     var self = this;

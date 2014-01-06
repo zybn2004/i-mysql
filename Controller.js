@@ -118,17 +118,17 @@ Controller.prototype.intervalQueueForTransaction=function(){
         if((!queue||queue.length==0)&&!trans._doing&&trans.destroy()){
             self.debugLog(transId+':'+'*****unused transaction! system auto destroy it!');
             /*
-            process.nextTick(function(transId){
-                if(this.cacheTransaction[transId]){
-                    this.debugLog(transId+':'+'*****unused transaction is destroying!');
-                    this.cacheTransaction[transId]._controller = null;
-                    this.cacheTransaction[transId] = null;
-                    delete this.cacheTransaction[transId];
-                    this.queueForTransaction[transId]= null;
-                    delete this.queueForTransaction[transId];
-                }
-            }.bind(self,transId));
-            */
+             process.nextTick(function(transId){
+             if(this.cacheTransaction[transId]){
+             this.debugLog(transId+':'+'*****unused transaction is destroying!');
+             this.cacheTransaction[transId]._controller = null;
+             this.cacheTransaction[transId] = null;
+             delete this.cacheTransaction[transId];
+             this.queueForTransaction[transId]= null;
+             delete this.queueForTransaction[transId];
+             }
+             }.bind(self,transId));
+             */
             self.debugLog(transId+':'+'*****unused transaction is destroying!');
             self.cacheTransaction[transId]._controller = null;
             self.cacheTransaction[transId] = null;
@@ -635,6 +635,9 @@ Controller.prototype.tableStruct=function(_table){
 
 Controller.prototype.table = function(tableName){
     var self = this;
+    if(typeof tableName == "function"){
+        tableName = tableName();
+    }
     tableName = self.table._escapeTableName(tableName);
     if(self.cacheTable[tableName]){
         var t_table = self.cacheTable[tableName];
@@ -647,13 +650,13 @@ Controller.prototype.table = function(tableName){
     var _table = new Table(tableName,self);
     self.cacheTable[tableName] = _table;
     /*
-    _table.on('structed',function(){
+     _table.on('structed',function(){
 
-    });
-    _table.on('no_such_table',function(){
+     });
+     _table.on('no_such_table',function(){
 
-    });
-    */
+     });
+     */
 
     self.tableStruct(_table);
 
@@ -732,6 +735,9 @@ Controller.prototype.table._dequeue=function(err){
 Controller.prototype.transaction = function(transactionId){
     var self = this;
     if(transactionId!=undefined&&transactionId!=null){
+        if(typeof transactionId == "function"){
+            transactionId = transactionId();
+        }
         var t_trans = self.cacheTransaction[Number(transactionId)];
         if(!t_trans||t_trans.destroy()){
             return null;

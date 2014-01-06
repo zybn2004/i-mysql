@@ -117,6 +117,9 @@ function db(dbIndex){
     this._flag = "db";
     this._activeDbIndex = dbIndex;
 }
+db.prototype.getDbIndex = function(){
+    return this._activeDbIndex;
+}
 db.prototype.switch=function(dbIndex){
 
     dbIndex = checkDBIndex(dbIndex);
@@ -156,6 +159,9 @@ module.exports.table = function(dbIndex,tableName){
 
     if(tableName===null||tableName===undefined){
         tableName = "";
+    }
+    if(typeof tableName == "function"){
+        tableName = tableName();
     }
     tableName = String(tableName).trim();
 
@@ -297,6 +303,9 @@ module.exports.transaction = function(dbIndex,transactionId){
     if(transactionId===null||transactionId===undefined){
         transactionId = dbIndex;
         dbIndex = null;
+    }
+    if(typeof transactionId == "function"){
+        transactionId = transactionId();
     }
     var theController = currentControllerGlobal;
     var theDbIndex = currentDbIndexGlobal;
@@ -502,7 +511,10 @@ transaction.prototype.table = function(tableObj_or_tableName){
     var tableName = null;
     if(typeof tableObj_or_tableName == "object"&&tableObj_or_tableName._flag=="table"&&tableObj_or_tableName._activeTableName&&tableObj_or_tableName._activeDbIndex==this._activeDbIndex){
         tableName = tableObj_or_tableName._activeTableName;
-    }else if(typeof tableObj_or_tableName == "string"){
+    }else if(typeof tableObj_or_tableName == "string"||typeof tableObj_or_tableName == "function"){
+        if(typeof tableObj_or_tableName == "function"){
+            tableObj_or_tableName = tableObj_or_tableName();
+        }
         tableName = controllerPool[this._activeDbIndex].table._escapeTableName(tableObj_or_tableName);
     }else{
         console.log(npmPackageName+':the transaction try to call the table function! but the param is invalid!');

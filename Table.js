@@ -123,10 +123,10 @@ Table.prototype.insert = function(__options,__cb){
             agent._enqueue.call(agent,'sql',function(err){return _sql.call(this,err,'insert',options,_cb);}.bind(_table));
         }else{
             /*
-            process.nextTick(function(){
-                cb.call(this,new Error('wrong arguments for Table.prototype.insert by agent'));
-            }.bind(agent));
-            */
+             process.nextTick(function(){
+             cb.call(this,new Error('wrong arguments for Table.prototype.insert by agent'));
+             }.bind(agent));
+             */
             throw new Error('wrong arguments for Table.prototype.insert by agent');
         }
 
@@ -188,10 +188,10 @@ Table.prototype.select = function(__options,__cb){
             agent._enqueue.call(agent,'sql',function(err){return _sql.call(this,err,'select',options,_cb);}.bind(_table));
         }else{
             /*
-            process.nextTick(function(){
-                cb.call(this,new Error('wrong arguments for Table.prototype.select by agent'));
-            }.bind(agent));
-            */
+             process.nextTick(function(){
+             cb.call(this,new Error('wrong arguments for Table.prototype.select by agent'));
+             }.bind(agent));
+             */
             throw new Error('wrong arguments for Table.prototype.select by agent');
         }
 
@@ -253,10 +253,10 @@ Table.prototype.update = function(__options,__cb){
             agent._enqueue.call(agent,'sql',function(err){return _sql.call(this,err,'update',options,_cb);}.bind(_table));
         }else{
             /*
-            process.nextTick(function(){
-                cb.call(this,new Error('wrong arguments for Table.prototype.update by agent'));
-            }.bind(agent));
-            */
+             process.nextTick(function(){
+             cb.call(this,new Error('wrong arguments for Table.prototype.update by agent'));
+             }.bind(agent));
+             */
             throw new Error('wrong arguments for Table.prototype.update by agent');
         }
 
@@ -319,10 +319,10 @@ Table.prototype.delete = function(__options,__cb){
             agent._enqueue.call(agent,'sql',function(err){return _sql.call(this,err,'delete',options,_cb);}.bind(_table));
         }else{
             /*
-            process.nextTick(function(){
-                cb.call(this,new Error('wrong arguments for Table.prototype.delete by agent'));
-            }.bind(agent));
-            */
+             process.nextTick(function(){
+             cb.call(this,new Error('wrong arguments for Table.prototype.delete by agent'));
+             }.bind(agent));
+             */
             throw new Error('wrong arguments for Table.prototype.delete by agent');
         }
 
@@ -433,20 +433,20 @@ function _structColumns(struct){
 
 
 /*
-fields和values:              可在insert、update时配套使用，其中fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，values表示对应的值(可支持如['字段值','字段值']的数组或者[['字段值','字段值1'],['字段值','字段值2']]这样的二维数组从而进行批量插入)
-fields:                      可在select中单独使用，表示需要查询的字段，且可以为空（表示所有字段都需查询）
-data:                        可在insert、update时使用，且优先与field和values，为如{'字段':字段值}的json对象
+ fields和values:              可在insert、update时配套使用，其中fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，values表示对应的值(可支持如['字段值','字段值']的数组或者[['字段值','字段值1'],['字段值','字段值2']]这样的二维数组从而进行批量插入)
+ fields:                      可在select中单独使用，表示需要查询的字段，且可以为空（表示所有字段都需查询）
+ data:                        可在insert、update时使用，且优先与field和values，为如{'字段':字段值}的json对象
 
 
-where:                       可在select、update、delete中使用，且支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串，where只支持and的拼接
-groupBy、orderBy和limit:      只可在select中使用，其中groupBy可以为数组对象如['字段1','字段2']，orderBy可以为json对象如{'字段1':'desc','字段2':''}，而limit可以为json对象如{start:10,total:20}也可以为[10,20]，它们都支持字符串，limit还支持数字（此时表示的即是total的值）
+ where:                       可在select、update、delete中使用，且支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串，where为json对象时只支持and的拼接
+ fieldset、groupBy、orderBy和limit:      只可在select中使用，其中fieldset可以为字符串，groupBy可以为数组对象如['字段1','字段2']，orderBy可以为json对象如{'字段1':'desc','字段2':''}，而limit可以为json对象如{start:10,total:20}也可以为[10,20]，它们都支持字符串，limit还支持数字（此时表示的即是total的值）
 
 
-insert: data(json)/fields(array(string)/string(,)),values(array/array(array))
-select: fields(array(string)/string(,)),where(json/string),groupBy(array(string)/string),orderBy(json/string),limit(json/string)
-update: data(json),where(json/string)/fields(array(string)/string(,)),values(array),where(json/string)
-delete: where(json/string)
-*/
+ insert: data(json)/fields(array(string)/string(,)),values(array/array(array))
+ select: fieldset(string),fields(array(string)/string(,)),where(json/string),groupBy(array(string)/string),orderBy(json/string),limit(json/string)
+ update: data(json),where(json/string)/fields(array(string)/string(,)),values(array),where(json/string)
+ delete: where(json/string)
+ */
 
 function _isObjectAndIsNotEmpty(obj){
     if(!obj){
