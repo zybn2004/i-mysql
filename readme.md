@@ -137,7 +137,7 @@ db1Obj.sql('select c1 from test_table where id = ?','3',function(err){
 
 
 ###四、table对象
-* 1)获取table对象，function table(dbIndex,tableName) table支持2个参数，dbIndex可选，tableName必填，其中dbIndex支持数字型参数或者一个返回数字型数据的function参数，没有传入dbIndex时默认为i-mysql的默认数据库索引，tableName可以是表示表名的字符串或者一个可以返回表名字符串数据的方法。
+* 1)获取table对象，function table(dbIndex,tableName) table支持2个参数，dbIndex可选，tableName必填，如果只有1个参数传入则被认为该参数表示的是tableName，其中dbIndex支持数字型参数或者一个返回数字型数据的function参数，没有传入dbIndex时默认为i-mysql的默认数据库索引，tableName可以是表示表名的字符串或者一个可以返回表名字符串数据的方法。
 * 2)从table对象获取表名，function table.getTableName()。
 * 3)从table对象获取所在数据库索引，function table.getDbIndex()。
 * 4)table对象切换数据库，function table.switch(dbIndex) switch方法支持数字型参数或者一个返回数字型数据的function参数。
@@ -313,7 +313,7 @@ testTable.insert({data:{id:1,c1:'t1'}},function(err){
 
 
 ###五、transaction对象
-* 1)获取transaction对象，function transaction(dbIndex,transactionId) transaction方法可接受2个参数，dbIndex和transactionId都是可选的，其中dbIndex支持数字型参数或者一个返回数字型数据的function参数，没有传入dbIndex时默认为i-mysql的默认数据库索引，transactionId可以是事务id或者一个可以返回事务id数据的方法。
+* 1)获取transaction对象，function transaction(dbIndex,transactionId) transaction方法可接受2个参数，dbIndex和transactionId（transactionId参数比较特殊，如果为负数，那么i-mysql会认为事务id不是去获取一个可能已经存在的事务，而是去获得一个全新的事务）都是可选的，如果只有1个参数传入则被认为该参数表示的是transactionId，其中dbIndex支持数字型参数或者一个返回数字型数据的function参数(dbIndex默认为i-mysql的默认数据库索引)，transactionId可以是事务id或者一个可以返回事务id数据的方法。
 * 2)从transaction对象获取事务id，function transaction.getId()。
 * 3)从transaction对象获取所在数据库索引，function transaction.getDbIndex()。
 * 4)transaction对象获取是否超时或者设置事务超时时的自动提交时间并返回是否超时，function transaction.autoCommit(autoCommitTimeout) autoCommit方法如传入参数时表示需要设置超时自动提交时间（单位为毫秒）并返回事务在当下是否已经超时(boolean)，未传入参数（默认为10秒）则只返回事务在当下是否已经超时(boolean)。
@@ -330,26 +330,46 @@ testTable.insert({data:{id:1,c1:'t1'}},function(err){
 
 ###1.transaction对象获得途径
 
-从默认数据库中获得一个transaction对象：
+从默认数据库中获得一个全新的transaction对象：
 ```js
 var trans1 = iMysql.transaction();
+//或者
+var trans1 = iMysql.transaction(-1);
 ```
 
-指定从某个数据库中获得一个transaction对象：
+在设置默认数据库后获得一个全新的transaction对象（不推荐这种写法，您可以尝试下面介绍的“从指定数据库中获得一个全新的transaction对象”的写法）：
 ```js
-var trans1 = iMysql.transaction(1);
+//如果只是临时改变默认数据库，那么请记得在调用transaction之后重新设置回原来的默认数据库
+var oldDefaultDbIndex = iMysql.defaultDb();
+var trans1 = iMysql.defaultDb(1).transaction();
+iMysql.defaultDb(oldDefaultDbIndex);
 ```
 
-动态指定从某个数据库中获得一个transaction对象：
+从默认数据库中获得一个指定事务id的transaction对象（该事务可能是之前使用过的，但是如果该事务id的事务不存在或者已经被销毁则返回的是null）：
 ```js
-function chooseDb(){
-    return 1;
+var trans1 = iMysql.transaction(11);
+```
+
+从默认数据库中获得一个动态指定事务id的transaction对象：
+```js
+function chooseTransId(){
+    return 23;
 }
 
-var trans1 = iMysql.transaction(chooseDb);
+var trans1 = iMysql.transaction(chooseTransId);
+```
+
+从指定数据库中获得一个全新的transaction对象：
+```js
+var trans1 = iMysql.transaction(1,-1);
 ```
 
 从指定数据库中获得一个指定事务id的transaction对象：
+```js
+var trans1 = iMysql.transaction(1,23);
+```
+
+从指定数据库中获得一个动态指定事务id的transaction对象：
 ```js
 function chooseTransId(){
     return 23;

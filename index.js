@@ -198,7 +198,7 @@ module.exports.table = function(dbIndex,tableName){
         return new table(theDbIndex,theTable._tableName);
     }else{
         console.log(npmPackageName+':try to call the table function from a destroyed table! check your program!');
-        throw new Error(npmPackageName+':try to call the table function from a destroyed table! check your program!');
+        //throw new Error(npmPackageName+':try to call the table function from a destroyed table! check your program!');
         return null;
     }
 }
@@ -300,6 +300,7 @@ module.exports.transaction = function(dbIndex,transactionId){
         throw new Error(npmPackageName+' must config first!');
         return null;
     }
+
     if(transactionId===null||transactionId===undefined){
         transactionId = dbIndex;
         dbIndex = null;
@@ -333,7 +334,11 @@ module.exports.transaction = function(dbIndex,transactionId){
             throw new Error(npmPackageName+':try to call the transaction function! but the param is invalid!');
             return null;
         }
-        theTrans = theController.transaction(Number(transactionId));
+        if(Number(transactionId)<0){
+            theTrans = theController.transaction();
+        }else{
+            theTrans = theController.transaction(Number(transactionId));
+        }
 
     }else{
         theTrans = theController.transaction();
@@ -343,7 +348,7 @@ module.exports.transaction = function(dbIndex,transactionId){
         return new transaction(theDbIndex,theTrans.getId());
     }else{
         console.log(npmPackageName+':try to call the transaction function from a destroyed or not exists transaction! check your program!');
-        throw new Error(npmPackageName+':try to call the transaction function from a destroyed or not exists transaction! check your program!');
+        //throw new Error(npmPackageName+':try to call the transaction function from a destroyed or not exists transaction! check your program!');
         return null;
     }
 
