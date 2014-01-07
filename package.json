@@ -9,7 +9,7 @@
     "url": "https://github.com/zybn2004/i-mysql/issues"
   },
   "homepage": "https://github.com/zybn2004/i-mysql",
-  "description": "A powerful nodejs module for mysql, we called be i-mysql.Including single table CRUD, transactions, multi- database switch function, etc.    i-mysql 是将mysql进行二次封装的一个强大的nodejs模块，主要包括了单表的CRUD、事务相关操作、多数据库切换等功能！",
+  "description": "A powerful nodejs module for mysql, we called be i-mysql.Including single table CRUD, transaction operations, multi- database switch function, etc.    i-mysql 是将mysql进行二次封装的一个强大的nodejs模块，主要包括了单表的CRUD、事务相关操作、多数据库切换等功能！",
   "main": "index.js",
   "dependencies": {
     "big-integer": "~1.1.5",
