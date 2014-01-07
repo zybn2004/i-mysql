@@ -1,6 +1,6 @@
 {
   "name": "i-mysql",
-  "version": "0.0.12",
+  "version": "0.1.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/zybn2004/i-mysql.git"

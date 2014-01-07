@@ -18,7 +18,7 @@ npm install i-mysql
 
 ###一、数据库配置
 i-mysql必须在执行config之后才可以进行其它操作。
-function config(array/json) config方法可接收如下例子中的数组，也可以是只有单个数据库配置的json对象（这个时候就不存在数据库切换的情况了）。
+function config(configs) config方法可接收如下例子中的数组，也可以是只有单个数据库配置的json对象（这个时候就不存在数据库切换的情况了）。
 
 ```js
 var iMysql = require('i-mysql');
@@ -32,7 +32,7 @@ iMysql.config([
 ###二、数据库索引
 成功配置了i-mysql之后，会默认将第一个数据库作为默认数据库，您也可以通过defaultDb方法获取当前默认数据库的索引或者设置新的默认数据库索引给i-mysql。
 数据库索引值从0开始，即为config时数组的索引，如果只有单数据库，那么有效的数据库索引值只能为0。
-获取或设置数据库索引的方法，function defaultDb(number/function) defaultDb方法支持数字型参数或者一个返回数字型数据的function参数。
+获取或设置数据库索引的方法，function defaultDb(dbIndex) defaultDb方法支持数字型参数或者一个返回数字型数据的function参数。
 
 获取默认数据库的索引：
 ```js
@@ -55,9 +55,9 @@ iMysql.defaultDb(chooseDb);
 
 ###三、简单的数据库执行对象
 * 1)获取简单数据库执行对象，function db(dbIndex) db方法支持数字型参数或者一个返回数字型数据的function参数。
-* 2)获取简单数据库执行对象所在数据库索引，function getDbIndex() getDbIndex方法返回当下简单数据库对象所在的数据库索引。
-* 3)数据库执行对象切换数据库，function switch(dbIndex) switch方法支持数字型参数或者一个返回数字型数据的function参数。
-* 4)简单数据库执行对象执行sql，function sql(sql,options,cb) sql方法可接受3个参数（与mysql包的query方法相同）：
+* 2)获取简单数据库执行对象所在数据库索引，function db.getDbIndex() getDbIndex方法返回当下简单数据库对象所在的数据库索引。
+* 3)数据库执行对象切换数据库，function db.switch(dbIndex) switch方法支持数字型参数或者一个返回数字型数据的function参数。
+* 4)简单数据库执行对象执行sql，function db.sql(sql,options,cb) sql方法可接受3个参数（与mysql包的query方法相同）：
   * ①必填参数sql：可以是字符串或者一个返回字符串数据的function。
   * ②可选参数options：用来填充sql的对象。
   * ③可选参数cb：执行sql之后的回调函数。
@@ -318,7 +318,7 @@ testTable.insert({data:{id:1,c1:'t1'}},function(err){
 * 3)从transaction对象获取所在数据库索引，function transaction.getDbIndex()。
 * 4)transaction对象获取是否超时或者设置事务超时时的自动提交时间并返回是否超时，function transaction.autoCommit(autoCommitTimeout) autoCommit方法如传入参数时表示需要设置超时自动提交时间（单位为毫秒）并返回事务在当下是否已经超时(boolean)，未传入参数（默认为10秒）则只返回事务在当下是否已经超时(boolean)。
 * 5)transaction对象获取是否应该被销毁或者设置应该被销毁的闲置持续时间并返回是否应该被销毁，function transaction.destroy(destroyTimeout) destroy方法如传入参数时表示需要设置应该被销毁的闲置持续时间（单位为毫秒）并返回在当下是否已经应该被销毁(boolean)，未传入参数（默认为10分钟）则只返回在当下是否已经应该被销毁(boolean)。
-* 6)transaction对象切换数据库，function transaction.switch(dbIndex) switch方法支持数字型参数或者一个返回数字型数据的function参数，switch在首次switch之后，只有在调用过commit或者rollback之后才能再次switch成不同的数据库（同一个数据库switch多次则忽略）。
+* 6)transaction对象切换数据库，function transaction.switch(dbIndex) switch方法支持数字型参数或者一个返回数字型数据的function参数，switch在首次switch之后，只有在调用过commit或者rollback之后才能再次switch成不同的数据库（switch成同一个数据库多次则忽略）。
 * 7)transaction对象事务提交，function transaction.commit(cb) commit方法支持传入一个回调函数，该函数与mysql包的commit方法的回调函数相同，当处于transaction的sql、insert、select、update、delete方法的回调函数中在不发生错误时调用则会强制提交。
 * 8)transaction对象事务回滚，function transaction.rollback(cb) rollback方法支持传入一个回调函数，该函数与mysql包的rollback方法的回调函数相同，当处于transaction的sql、insert、select、update、delete方法的回调函数中在不发生错误时调用则会强制回滚。
 * 9)transaction对象包装table，function transaction.table(tableObj_or_tableName) table方法支持table对象或者表示表名的字符串或者一个可以返回表名字符串数据或者table对象的方法，如传入为table对象时会校验它所在的数据库索引是否与当前事务所在的数据库索引一致，不一致则直接抛异常。
