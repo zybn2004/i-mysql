@@ -410,7 +410,7 @@ Controller.prototype.intervalQueueForTable=function(){
             self.debugLog(tableName+':'+'*****unused table! system auto destroy it!');
 
             self.debugLog(tableName+':'+'*****unused table is destroying!');
-            self.cacheTable[tableName]._controller = null;
+            //self.cacheTable[tableName]._controller = null;
             self.cacheTable[tableName] = null;
             delete self.cacheTable[tableName];
             self.queueForTable[tableName]= null;
@@ -641,7 +641,7 @@ Controller.prototype.table = function(tableName){
     tableName = self.table._escapeTableName(tableName);
     if(self.cacheTable[tableName]){
         var t_table = self.cacheTable[tableName];
-        if(!t_table||t_table.isDestroyed()){
+        if(!t_table/*||t_table.isDestroyed()*/){
             return null;
         }
         return t_table;
@@ -739,7 +739,7 @@ Controller.prototype.transaction = function(transactionId){
             transactionId = transactionId();
         }
         var t_trans = self.cacheTransaction[Number(transactionId)];
-        if(!t_trans||t_trans.destroy()){
+        if(!t_trans/*||t_trans.destroy()*/){
             return null;
         }
         return t_trans;

@@ -193,14 +193,14 @@ module.exports.table = function(dbIndex,tableName){
     theTable = theController.table(tableName);
 
 
-
-    if(theTable&&!theTable._destroyed){
+    //theTable is impossibly destroyed,because the destroy function run safely,so comment code
+    //if(theTable&&!theTable._destroyed){
         return new table(theDbIndex,theTable._tableName);
-    }else{
-        console.log(npmPackageName+':try to call the table function from a destroyed table! check your program!');
+    //}else{
+    //    console.log(npmPackageName+':try to call the table function from a destroyed table! check your program!');
         //throw new Error(npmPackageName+':try to call the table function from a destroyed table! check your program!');
-        return null;
-    }
+    //    return null;
+    //}
 }
 
 function table(dbIndex,tableName){
@@ -412,8 +412,36 @@ transaction.prototype.getId = function(){
 transaction.prototype.getDbIndex = function(){
     return this._activeDbIndex;
 }
-transaction.prototype.switch=function(dbIndex){
+transaction.prototype.switch=function(dbIndex,isForceNewTrans){
+    isForceNewTrans = !!isForceNewTrans;
     dbIndex = checkDBIndex(dbIndex);
+
+    if(isForceNewTrans){
+        if(dbIndex===null){
+            console.log(npmPackageName+':the transaction try to call the switch function! but the param is invalid!');
+            throw new Error(npmPackageName+':the transaction try to call the switch function! but the param is invalid!');
+            return null;
+        }
+        var theNewCtTrans = controllerPool[dbIndex].transaction();
+        for(var i=0;i<this._historyTransactions.length;i++){
+            var hisTrans = this._historyTransactions[i];
+            if(typeof hisTrans !="string"||(hisTrans.split("_")).length!=2){
+                continue;
+            }
+
+            var _hisTrans = hisTrans.split("_");
+            var _dbIndex = Number(_hisTrans[0]);
+            if(_dbIndex == dbIndex){
+                var foundTransId = Number(_hisTrans[1]);
+                this._historyTransactions[i] = dbIndex + '_' + theNewCtTrans.getId();
+                break;
+            }
+        };
+        this._activeDbIndex = dbIndex;
+        this._activeTransactionId = theNewCtTrans.getId();
+        this._switched = true;
+        return this;
+    }
 
     if(this._switched&&this._activeDbIndex!=dbIndex){
         console.log(npmPackageName+':the transaction try to call the switch function! but it has been switched! you can call commit or rollback function then you can call the switch function again!');

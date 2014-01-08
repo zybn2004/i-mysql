@@ -21,7 +21,8 @@ exports.check = function (value, field) {
         }else if(String(extra).trim() !== '' && extra !== null && extra !== undefined){
             return null;
         }else{
-            value = defaultValue;
+            //value = defaultValue;
+            return null;
         }
     }else if((value===undefined||value===null)&&canNull=='YES'){
         return null;

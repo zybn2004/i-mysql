@@ -384,9 +384,11 @@ function _sql(err,opType,options,cb){
         return 'wait';
     }
 
+    /* Comment code because it maybe called from transaction
     if(this.isDestroyed()){
         return {err:new Error('the table '+ this._tableName +' has been destroyed in cache!')};
     }
+    */
 
     if(this._no_such_table){
         return {err:this._no_such_table_error};
@@ -429,24 +431,6 @@ function _structColumns(struct){
 }
 
 
-
-
-
-/*
- fields和values:              可在insert、update时配套使用，其中fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，values表示对应的值(可支持如['字段值','字段值']的数组或者[['字段值','字段值1'],['字段值','字段值2']]这样的二维数组从而进行批量插入)
- fields:                      可在select中单独使用，表示需要查询的字段，且可以为空（表示所有字段都需查询）
- data:                        可在insert、update时使用，且优先与field和values，为如{'字段':字段值}的json对象
-
-
- where:                       可在select、update、delete中使用，且支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串，where为json对象时只支持and的拼接
- fieldset、groupBy、orderBy和limit:      只可在select中使用，其中fieldset可以为字符串，groupBy可以为数组对象如['字段1','字段2']，orderBy可以为json对象如{'字段1':'desc','字段2':''}，而limit可以为json对象如{start:10,total:20}也可以为[10,20]，它们都支持字符串，limit还支持数字（此时表示的即是total的值）
-
-
- insert: data(json)/fields(array(string)/string(,)),values(array/array(array))
- select: fieldset(string),fields(array(string)/string(,)),where(json/string),groupBy(array(string)/string),orderBy(json/string),limit(json/string)
- update: data(json),where(json/string)/fields(array(string)/string(,)),values(array),where(json/string)
- delete: where(json/string)
- */
 
 function _isObjectAndIsNotEmpty(obj){
     if(!obj){

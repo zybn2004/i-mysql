@@ -120,7 +120,7 @@ db1Obj.sql('select c1 from test_table where id = ?','3',function(err){
     }else{
         console.log(arguments);
     }
-}).sql('select c1 from test_table where ?',{id:'4',name:'t1'},function(err){
+}).sql('select c1 from test_table where ?',{id:'4'},function(err){//第二个参数如果是json对象，比如{id:'4',name:'t1'}，那么在执行时会格式化成`id`='4',`name`='t1'
     if(err){
         console.log(err);
     }else{
@@ -318,7 +318,7 @@ testTable.insert({data:{id:1,c1:'t1'}},function(err){
 * 3)从transaction对象获取所在数据库索引，function transaction.getDbIndex()。
 * 4)transaction对象获取是否超时或者设置事务超时时的自动提交时间并返回是否超时，function transaction.autoCommit(autoCommitTimeout) autoCommit方法如传入参数时表示需要设置超时自动提交时间（单位为毫秒）并返回事务在当下是否已经超时(boolean)，未传入参数（默认为10秒）则只返回事务在当下是否已经超时(boolean)。
 * 5)transaction对象获取是否应该被销毁或者设置应该被销毁的闲置持续时间并返回是否应该被销毁，function transaction.destroy(destroyTimeout) destroy方法如传入参数时表示需要设置应该被销毁的闲置持续时间（单位为毫秒）并返回在当下是否已经应该被销毁(boolean)，未传入参数（默认为10分钟）则只返回在当下是否已经应该被销毁(boolean)。
-* 6)transaction对象切换数据库，function transaction.switch(dbIndex) switch方法支持数字型参数或者一个返回数字型数据的function参数，switch在首次switch之后，只有在调用过commit或者rollback之后才能再次switch成不同的数据库（switch成同一个数据库多次则忽略）。
+* 6)transaction对象切换数据库，function transaction.switch(dbIndex,forceNewTransaction) switch方法接受2个参数，第一个参数dbIndex支持数字型参数或者一个返回数字型数据的function参数，switch在首次switch之后，只有在调用过commit或者rollback之后才能再次switch成不同的数据库（switch成同一个数据库多次则忽略），第二个参数forceNewTransaction(boolean)为真时，switch之后的事务将是一个全新的事务。
 * 7)transaction对象事务提交，function transaction.commit(cb) commit方法支持传入一个回调函数，该函数与mysql包的commit方法的回调函数相同，当处于transaction的sql、insert、select、update、delete方法的回调函数中在不发生错误时调用则会强制提交。
 * 8)transaction对象事务回滚，function transaction.rollback(cb) rollback方法支持传入一个回调函数，该函数与mysql包的rollback方法的回调函数相同，当处于transaction的sql、insert、select、update、delete方法的回调函数中在不发生错误时调用则会强制回滚。
 * 9)transaction对象包装table，function transaction.table(tableObj_or_tableName) table方法支持table对象或者表示表名的字符串或者一个可以返回表名字符串数据或者table对象的方法，如传入为table对象时会校验它所在的数据库索引是否与当前事务所在的数据库索引一致，不一致则直接抛异常。
@@ -424,7 +424,9 @@ console.log(trans1.destroy(60000));
 
 ```js
 var trans1 = iMysql.transaction();
-trans1.switch(1);//切换数据库之后事务id通常会与切换之前的事务id不同
+trans1.switch(1);//如果该trans1对象是首次切换数据库到‘1’这个数据库索引，那么切换之后事务id会与切换之前的事务id不同，否则即为上次切换过的事务id
+
+trans1.switch(1,true);//第二个参数为真时，表示无论如何都会获得一个全新的transaction对象，所以此时该对象的事务id必定变化了
 ```
 
 ###7.transaction对象提交事务
