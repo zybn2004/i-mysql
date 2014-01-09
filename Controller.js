@@ -382,7 +382,7 @@ Controller.prototype.intervalQueueForTransaction=function(){
     if(i==0){
         self.debugLog('*****intervalQueueForTransaction have no transaction need to handle!');
     }
-    self.intervalQueueForTransaction_Timeout = setTimeout(self.intervalQueueForTransaction.bind(self),10);
+    self.intervalQueueForTransaction_Timeout = setTimeout(self.intervalQueueForTransaction.bind(self),0);
 }
 
 Controller.prototype.intervalQueueForTable=function(){
@@ -499,7 +499,7 @@ Controller.prototype.intervalQueueForTable=function(){
     if(i==0){
         self.debugLog('*****intervalQueueForTable have no table need to handle!');
     }
-    self.intervalQueueForTable_Timeout = setTimeout(self.intervalQueueForTable.bind(self),10);
+    self.intervalQueueForTable_Timeout = setTimeout(self.intervalQueueForTable.bind(self),0);
 }
 
 
@@ -584,7 +584,7 @@ Controller.prototype.intervalQueueForSql=function(){
     }
 
 
-    self.intervalQueueForSql_Timeout = setTimeout(self.intervalQueueForSql.bind(self),10);
+    self.intervalQueueForSql_Timeout = setTimeout(self.intervalQueueForSql.bind(self),0);
 }
 
 
