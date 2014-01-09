@@ -1,22 +1,6 @@
 i-mysql
 =======
 
-### 文字被些字符包围
-> 文字被些字符包围
->
-> 只要再文字前面加上>空格即可
->
-> 如果你要换行的话,新起一行,输入>空格即可,后面不接文字
-> 但> 只能放在行首才有效
-
-### 文字被些字符包围,多重包围
-> 文字被些字符包围开始
->
-> > 只要再文字前面加上>空格即可
->
->  > > 如果你要换行的话,新起一行,输入>空格即可,后面不接文字
->
-> > > > 但> 只能放在行首才有效
 
 ## 安装
 ```bash
@@ -32,6 +16,66 @@ npm install i-mysql
 * 4.单表CRUD封装。
 * 5.事务封装（超时自动提交、错误自动回滚）。
 * 6.支持连缀写法。
+
+
+###方法总览
+> i-mysql
+>
+> > config
+>
+> > defaultDb
+>
+> > db
+>
+> > > getDbIndex
+>
+> > > switch
+>
+> > > sql
+>
+> > table
+>
+> > > getTableName
+>
+> > > getDbIndex
+>
+> > > switch
+>
+> > > insert
+>
+> > > select
+>
+> > > update
+>
+> > > delete
+>
+> > transaction
+>
+> > > getId
+>
+> > > getDbIndex
+>
+> > > autoCommit
+>
+> > > destroy
+>
+> > > switch
+>
+> > > commit
+>
+> > > rollback
+>
+> > > table
+>
+> > > insert
+>
+> > > select
+>
+> > > update
+>
+> > > delete
+>
+> > > sql
 
 
 ###一、数据库配置
