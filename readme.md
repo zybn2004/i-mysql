@@ -18,7 +18,7 @@ npm install i-mysql
 * 6.支持连缀写法。
 
 
-###方法总览
+###方法总览：
 > i-mysql
 >
 > > config
