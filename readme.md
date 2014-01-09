@@ -2,14 +2,14 @@ i-mysql
 =======
 
 
-## 安装
+# 安装
 ```bash
 npm install i-mysql
 ```
-## 介绍
+# 介绍
 
 
-###i-mysql的主要特点：
+##i-mysql的主要特点：
 * 1.多数据库自由切换。
 * 2.数据库托管。
 * 3.简单的数据库执行方法封装。
@@ -18,7 +18,7 @@ npm install i-mysql
 * 6.支持连缀写法。
 
 
-###方法总览：
+##方法总览：
 > i-mysql
 >
 > > config
@@ -78,7 +78,7 @@ npm install i-mysql
 > > > sql
 
 
-###一、数据库配置
+##一、数据库配置
 i-mysql必须在执行config之后才可以进行其它操作，且只能config一次。<br />
 function config(configs) config方法可接收如下例子中的数组，也可以是只有单个数据库配置的json对象（这个时候就不存在数据库切换的情况了）。<br />
 
@@ -91,7 +91,7 @@ iMysql.config([
 ```
 
 
-###二、数据库索引
+##二、数据库索引
 成功配置了i-mysql之后，会默认将第一个数据库作为默认数据库，您也可以通过defaultDb方法获取当前默认数据库的索引或者设置新的默认数据库索引给i-mysql。<br />
 数据库索引值从0开始，即为config时数组的索引，如果只有单数据库，那么有效的数据库索引值只能为0。<br />
 获取或设置数据库索引的方法，function defaultDb(dbIndex) defaultDb方法支持数字型参数或者一个返回数字型数据的function参数。<br />
@@ -115,7 +115,7 @@ function chooseDb(){
 iMysql.defaultDb(chooseDb);
 ```
 
-###三、简单的数据库执行对象
+##三、简单的数据库执行对象
 * 1)获取简单数据库执行对象，function db(dbIndex) db方法支持数字型参数或者一个返回数字型数据的function参数。
 * 2)获取简单数据库执行对象所在数据库索引，function db.getDbIndex() getDbIndex方法返回当下简单数据库对象所在的数据库索引。
 * 3)数据库执行对象切换数据库，function db.switch(dbIndex) switch方法支持数字型参数或者一个返回数字型数据的function参数。
@@ -198,7 +198,7 @@ db1Obj.sql('select c1 from test_table where id = ?','3',function(err){
 ```
 
 
-###四、table对象
+##四、table对象
 * 1)获取table对象，function table(dbIndex,tableName) table支持2个参数，dbIndex可选，tableName必填，如果只有1个参数传入则被认为该参数表示的是tableName，其中dbIndex支持数字型参数或者一个返回数字型数据的function参数，没有传入dbIndex时默认为i-mysql的默认数据库索引，tableName可以是表示表名的字符串或者一个可以返回表名字符串数据的方法。
 * 2)从table对象获取表名，function table.getTableName()。
 * 3)从table对象获取所在数据库索引，function table.getDbIndex()。
@@ -374,7 +374,7 @@ testTable.insert({data:{id:1,c1:'t1'}},function(err){
 ```
 
 
-###五、transaction对象
+##五、transaction对象
 * 1)获取transaction对象，function transaction(dbIndex,transactionId) transaction方法可接受2个参数，dbIndex和transactionId（transactionId参数比较特殊，如果为负数，那么i-mysql会认为事务id不是去获取一个可能已经存在的事务，而是去获得一个全新的事务）都是可选的，如果只有1个参数传入则被认为该参数表示的是transactionId，其中dbIndex支持数字型参数或者一个返回数字型数据的function参数(dbIndex默认为i-mysql的默认数据库索引)，transactionId可以是事务id或者一个可以返回事务id数据的方法。
 * 2)从transaction对象获取事务id，function transaction.getId()。
 * 3)从transaction对象获取所在数据库索引，function transaction.getDbIndex()。
@@ -391,6 +391,7 @@ testTable.insert({data:{id:1,c1:'t1'}},function(err){
   * ③可选参数cb：执行sql之后的回调函数。
 
 ###1.transaction对象获得途径
+注意：如果因业务需要您尝试通过事务id获取一个曾经获得过的transaction对象，那么请注意需要try catch，因为该事务如果不存在或者应该被销毁时会抛异常（destroy方法也许能帮助你解决部分问题）！实际上每次都获取一个全新的事务程序运行的效率反而高，所以不到万不得已请不要重复使用曾经的事务！
 
 从默认数据库中获得一个全新的transaction对象：
 ```js

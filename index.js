@@ -348,7 +348,7 @@ module.exports.transaction = function(dbIndex,transactionId){
         return new transaction(theDbIndex,theTrans.getId());
     }else{
         console.log(npmPackageName+':try to call the transaction function from a destroyed or not exists transaction! check your program!');
-        //throw new Error(npmPackageName+':try to call the transaction function from a destroyed or not exists transaction! check your program!');
+        throw new Error(npmPackageName+':try to call the transaction function from a destroyed or not exists transaction! check your program!');
         return null;
     }
 
