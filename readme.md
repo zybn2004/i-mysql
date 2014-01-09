@@ -67,13 +67,13 @@ npm install i-mysql
 >
 > > > table
 >
-> > > insert
+> > > > insert
 >
-> > > select
+> > > > select
 >
-> > > update
+> > > > update
 >
-> > > delete
+> > > > delete
 >
 > > > sql
 
