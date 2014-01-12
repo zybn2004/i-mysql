@@ -380,6 +380,10 @@ Controller.prototype.intervalQueueForTransaction=function(){
                     this._resetBeginTime();
                     this._connection.release();
                     this._connection = null;
+
+                    this._beginCommand = false;
+                    this._commitCommand = false;
+                    this._rollbackCommand = true;
                 }
 
                 if(conErr){
