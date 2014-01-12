@@ -494,7 +494,7 @@ trans1.switch(1,true);//第二个参数为真时，表示无论如何都会获�
 
 ###7.transaction对象提交事务
 
-注意：一定要注意在一个事务代码书写到最后时加上commit或者rollback的调用（在使用async包这类同步方法时除外，因为您可能在中途commit或者rollback，i-mysql称之为强制commit和强制rollback，执行了这些强制方法之后，如果还想做事务操作建议重新获得一个全新的事务对象来调用相关事务方法或者通过process.nextTick等方法在下一瞬先执行原事务对象的commit或者rollback方法后才可以调用原事务对象的sql、或者table的相关方法等），以保证事务的完整性，否则会在占用一段时间的连接后自动提交事务！
+注意：一定要注意在一个事务代码书写到最后时加上commit或者rollback的调用（在使用async包这类同步方法时除外，因为您可能在中途commit或者rollback，i-mysql称之为强制commit和强制rollback，执行了这些强制方法之后，如果还想做事务操作建议重新获得一个全新的事务对象来调用相关事务方法或者通过process.nextTick等方法在下一瞬调用原事务对象的sql、或者table的相关方法等），以保证事务的完整性，否则会在占用一段时间的连接后自动提交事务！
 ```js
 var trans1 = iMysql.transaction();
 trans1.sql('insert into test_table(c1)values(\'insert_value1\')',function(err){

@@ -228,9 +228,9 @@ Transaction.prototype.commit=function(cb){
     if(this._callbacking){//must call in callback immediately,it cann't be called when async!!
         if(this._relaxed||this._commitCommand||this._rollbackCommand){
             this._forceCommit(cb);
-            //this._beginCommand = false;
-            //this._commitCommand = true;
-            //this._rollbackCommand = false;
+            this._beginCommand = false;
+            this._commitCommand = true;
+            this._rollbackCommand = false;
         }else{
             var err = new Error('force commit command must have commit or rollback command in queue!please check your code!');
             _logErr(err);
@@ -309,9 +309,9 @@ Transaction.prototype.rollback=function(cb){
     if(this._callbacking){//must call in callback immediately,it cann't be called when async!!
         if(this._relaxed||this._commitCommand||this._rollbackCommand){
             this._forceRollback(cb);
-            //this._beginCommand = false;
-            //this._commitCommand = false;
-            //this._rollbackCommand = true;
+            this._beginCommand = false;
+            this._commitCommand = false;
+            this._rollbackCommand = true;
         }else{
             var err = new Error('force rollback command must have commit or rollback command in queue!please check your code!');
             _logErr(err);
