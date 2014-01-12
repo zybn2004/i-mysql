@@ -396,8 +396,8 @@ Transaction.prototype._enqueue = function(command,cb){
 }
 
 //inner function
-Transaction.prototype._dequeueAll = function(err){
-    this._controller.transaction._dequeueAll.call(this,err);
+Transaction.prototype._dequeueAll = function(err,cb){
+    this._controller.transaction._dequeueAll.call(this,err,cb);
 }
 
 //inner function
