@@ -159,7 +159,15 @@ Controller.prototype.intervalQueueForTransaction=function(){
 
         if(theOneConfig&&theOneConfig['err']){
             self.debugLog(transId+':'+'*****transaction got an err!');
-            trans._dequeueAll(theOneConfig['err']);
+            trans._doing = true;
+            trans._dequeueAll(theOneConfig['err'],function(){
+                this._doing = false;
+                this._resetBeginTime();
+                if(this._connection){
+                    this._connection.release();
+                    this._connection = null;
+                }
+            }.bind(trans));
             continue;
         }
 
@@ -177,12 +185,18 @@ Controller.prototype.intervalQueueForTransaction=function(){
                 if(conErr){
                     this._dequeueAll(conErr,function(){
                         this._doing = false;
+                        //this._autoCommit = false;
+                        this._resetBeginTime();
+                        if(connection){
+                            connection.release();
+                        }
                         //this._connection = connection;
                     }.bind(this));
                     return false;
                 }
 
                 this._doing = false;
+                this._resetBeginTime();
                 this._connection = connection;
             }.bind(trans));
             continue;
@@ -204,7 +218,10 @@ Controller.prototype.intervalQueueForTransaction=function(){
                         this._dequeueAll(conErr,function(){
                             this._doing = false;
 
-                            this._autoCommit = false;
+                            //this._autoCommit = false;
+                            this._resetBeginTime();
+                            this._connection.release();
+                            this._connection = null;
                         }.bind(this));
                         return false;
                     }
@@ -233,7 +250,10 @@ Controller.prototype.intervalQueueForTransaction=function(){
                     this._dequeueAll(conErr,function(){
                         this._doing = false;
 
+                        //this._autoCommit = false;
                         this._resetBeginTime();
+                        this._connection.release();
+                        this._connection = null;
                     }.bind(this));
                     return false;
                 }
@@ -266,7 +286,7 @@ Controller.prototype.intervalQueueForTransaction=function(){
                 if(conErr){
                     this._dequeueAll(conErr,function(){
                         this._doing = false;
-                        this._autoCommit = false;
+                        //this._autoCommit = false;
                         this._resetBeginTime();
                         this._connection.release();
                         this._connection = null;
@@ -276,7 +296,7 @@ Controller.prototype.intervalQueueForTransaction=function(){
 
                 this._dequeue();
                 this._doing = false;
-                this._autoCommit = false;
+                //this._autoCommit = false;
                 this._resetBeginTime();
                 this._connection.release();
                 this._connection = null;
@@ -304,7 +324,7 @@ Controller.prototype.intervalQueueForTransaction=function(){
                 if(conErr){
                     this._dequeueAll(conErr,function(){
                         this._doing = false;
-                        this._autoCommit = false;
+                        //this._autoCommit = false;
                         this._resetBeginTime();
                         this._connection.release();
                         this._connection = null;
@@ -314,7 +334,7 @@ Controller.prototype.intervalQueueForTransaction=function(){
 
                 this._dequeue();
                 this._doing = false;
-                this._autoCommit = false;
+                //this._autoCommit = false;
                 this._resetBeginTime();
                 this._connection.release();
                 this._connection = null;
@@ -345,7 +365,7 @@ Controller.prototype.intervalQueueForTransaction=function(){
                     self.debugLog(this._id+':'+'*****transaction handle sql command successfully!');
                 }
 
-                if(this._rollbackWhenError){
+                if(conErr&&this._rollbackWhenError){
                     self._logErr(trans._id+':'+'*****transaction rollback when error!');
                     this._connection.rollback(function(err){
                         self._logErr(err);
@@ -356,7 +376,7 @@ Controller.prototype.intervalQueueForTransaction=function(){
                         }
                     }.bind(this));
                     //trans._doing = false;
-                    this._autoCommit = false;
+                    //this._autoCommit = false;
                     this._resetBeginTime();
                     this._connection.release();
                     this._connection = null;
@@ -365,6 +385,12 @@ Controller.prototype.intervalQueueForTransaction=function(){
                 if(conErr){
                     this._dequeueAll(conErr,function(){
                         this._doing = false;
+                        //this._autoCommit = false;
+                        this._resetBeginTime();
+                        if(this._connection){
+                            this._connection.release();
+                            this._connection = null;
+                        }
                     }.bind(this));
                     return false;
                 }
@@ -859,9 +885,15 @@ Controller.prototype.transaction._forceCommit = function(cb){
         self._controller._logErr(err);
         self._doing = true;
         //not ignore
+        /*
         process.nextTick(function(){
             cb.call(this,err);
             this._doing = false;
+        }.bind(self));
+        */
+        self._dequeueAll(err,function(){
+            this._doing = false;
+            cb.call(this,err);
         }.bind(self));
     }else{
         self._doing = true;
@@ -872,6 +904,7 @@ Controller.prototype.transaction._forceCommit = function(cb){
                 this._resetBeginTime();
                 this._connection.release();
                 this._connection = null;
+                _cb.call(this,conErr);
             }.bind(this));
         }.bind(this)}.bind(self)(cb));
     }
@@ -886,9 +919,15 @@ Controller.prototype.transaction._forceRollback = function(cb){
         self._controller._logErr(err);
         self._doing = true;
         //not ignore
+        /*
         process.nextTick(function(){
             cb.call(this,err);
             this._doing = false;
+        }.bind(self));
+        */
+        self._dequeueAll(err,function(){
+            this._doing = false;
+            cb.call(this,err);
         }.bind(self));
     }else{
         self._doing = true;
@@ -899,6 +938,7 @@ Controller.prototype.transaction._forceRollback = function(cb){
                 this._resetBeginTime();
                 this._connection.release();
                 this._connection = null;
+                _cb.call(this,conErr);
             }.bind(this));
         }.bind(this)}.bind(self)(cb));
     }

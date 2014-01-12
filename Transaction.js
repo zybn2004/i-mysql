@@ -37,6 +37,7 @@ function Transaction(controller/*,globalCb*/){
     this._doing = false;
     this._callbacking = false;
     this._rollbackWhenError = true;
+    this._relaxed = true;
     /*if(globalCb&&typeof globalCb == "function"){
      this._globalCallback = globalCb;
      }*/
@@ -225,15 +226,30 @@ Transaction.prototype.commit=function(cb){
     }
 
     if(this._callbacking){//must call in callback immediately,it cann't be called when async!!
-        if(this._commitCommand||this._rollbackCommand){
+        if(this._relaxed||this._commitCommand||this._rollbackCommand){
             this._forceCommit(cb);
+            //this._beginCommand = false;
+            //this._commitCommand = true;
+            //this._rollbackCommand = false;
         }else{
             var err = new Error('force commit command must have commit or rollback command in queue!please check your code!');
             _logErr(err);
             //not ignore
+            this._doing = true;
+            this._dequeueAll(err,function(){
+                this._doing = false;
+                this._resetBeginTime();
+                if(this._connection){
+                    this._connection.release();
+                    this._connection = null;
+                }
+                cb.call(this,err);
+            }.bind(this));
+            /*
             process.nextTick(function(){
                 cb.call(this,err);
             }.bind(this));
+            */
         }
         return this;
     }
@@ -242,9 +258,21 @@ Transaction.prototype.commit=function(cb){
         var err = new Error('no transaction need to commit!');
         _logErr(err);
         //not ignore
+        this._doing = true;
+        this._dequeueAll(err,function(){
+            this._doing = false;
+            this._resetBeginTime();
+            if(this._connection){
+                this._connection.release();
+                this._connection = null;
+            }
+            cb.call(this,err);
+        }.bind(this));
+        /*
         process.nextTick(function(){
             cb.call(this,err);
         }.bind(this));
+        */
         //return false;
         return this;
     }
@@ -279,15 +307,30 @@ Transaction.prototype.rollback=function(cb){
         };
     }
     if(this._callbacking){//must call in callback immediately,it cann't be called when async!!
-        if(this._commitCommand||this._rollbackCommand){
+        if(this._relaxed||this._commitCommand||this._rollbackCommand){
             this._forceRollback(cb);
+            //this._beginCommand = false;
+            //this._commitCommand = false;
+            //this._rollbackCommand = true;
         }else{
             var err = new Error('force rollback command must have commit or rollback command in queue!please check your code!');
             _logErr(err);
             //not ignore
+            this._doing = true;
+            this._dequeueAll(err,function(){
+                this._doing = false;
+                this._resetBeginTime();
+                if(this._connection){
+                    this._connection.release();
+                    this._connection = null;
+                }
+                cb.call(this,err);
+            }.bind(this));
+            /*
             process.nextTick(function(){
                 cb.call(this,err);
             }.bind(this));
+            */
         }
         return this;
     }
@@ -297,9 +340,21 @@ Transaction.prototype.rollback=function(cb){
         var err = new Error('no transaction need to rollback!');
         _logErr(err);
         //not ignore
+        this._doing = true;
+        this._dequeueAll(err,function(){
+            this._doing = false;
+            this._resetBeginTime();
+            if(this._connection){
+                this._connection.release();
+                this._connection = null;
+            }
+            cb.call(this,err);
+        }.bind(this));
+        /*
         process.nextTick(function(){
             cb.call(this,err);
         }.bind(this));
+        */
         //return false;
         return this;
     }

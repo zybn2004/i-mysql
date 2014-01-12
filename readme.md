@@ -494,22 +494,24 @@ trans1.switch(1,true);//第二个参数为真时，表示无论如何都会获�
 
 ###7.transaction对象提交事务
 
-注意：一定要注意在一个事务代码书写到最后时加上commit或者rollback的调用，以保证事务的完整性，否则会在占用一段时间的连接后自动提交事务！
+注意：一定要注意在一个事务代码书写到最后时加上commit或者rollback的调用（在使用async包这类同步方法时除外，因为您可能在中途commit或者rollback，i-mysql称之为强制commit和强制rollback，执行了这些强制方法之后，如果还想做事务操作建议重新获得一个全新的事务对象来调用相关事务方法或者通过process.nextTick等方法在下一瞬先执行原事务对象的commit或者rollback方法后才可以调用原事务对象的sql、或者table的相关方法等），以保证事务的完整性，否则会在占用一段时间的连接后自动提交事务！
 ```js
 var trans1 = iMysql.transaction();
 trans1.sql('insert into test_table(c1)values(\'insert_value1\')',function(err){
     if(err){
+        //SQL执行发生错误是不需要执行rollback的，因为i-mysql已经帮您自动回滚了
         console.log(err);
     }else{
-        //如果因流程控制需要，此处也可以调用commit或者rollback，调用之后该事务中的后续步骤和回调将都不被执行
+        //如果因流程控制需要，此处也可以调用commit或者rollback，调用之后除非发生错误否则该事务中的后续步骤和回调将都不被执行（为什么存在后续步骤及其回调呢？因为是异步的，下面代码中的“trans1.commit”其实已经在堆栈中了）
         console.log(arguments);
     }
 });
 trans1.sql('insert into test_table(c1)values(\'insert_value2\')',function(err){
     if(err){
+        //SQL执行发生错误是不需要执行rollback的，因为i-mysql已经帮您自动回滚了
         console.log(err);
     }else{
-        //如果因流程控制需要，此处也可以调用commit或者rollback，调用之后该事务中的后续步骤和回调将都不被执行
+        //如果因流程控制需要，此处也可以调用commit或者rollback，调用之后除非发生错误否则该事务中的后续步骤和回调将都不被执行（为什么存在后续步骤及其回调呢？因为是异步的，下面代码中的“trans1.commit”其实已经在堆栈中了）
         console.log(arguments);
     }
 });
@@ -524,22 +526,25 @@ trans1.commit(function(err){
 
 ###8.transaction对象回滚事务
 
+注意：i-mysql具备SQL执行错误时自动回滚的，当然在SQL执行未发生错误时您也可以手动强制回滚，强制回滚调用之后除非发生错误否则该事务中的后续步骤和回调将都不被执行！
 ```js
 var trans1 = iMysql.transaction();
 trans1.sql('insert into test_table(c1)values(\'insert_value1\')',function(err){
     if(err){
+        //SQL执行发生错误是不需要执行rollback的，因为i-mysql已经帮您自动回滚了
         console.log(err);
     }else{
-        //如果因流程控制需要，此处也可以调用commit或者rollback，调用之后该事务中的后续步骤和回调将都不被执行
+        //如果因流程控制需要，此处也可以调用commit或者rollback，调用之后除非发生错误否则该事务中的后续步骤和回调将都不被执行（为什么存在后续步骤及其回调呢？因为是异步的，下面代码中的“trans1.commit”其实已经在堆栈中了）
         console.log(arguments);
     }
 });
 trans1.sql('insert into test_table(c1)values(\'insert_value2\')',function(err){
     if(err){
+        //SQL执行发生错误是不需要执行rollback的，因为i-mysql已经帮您自动回滚了
         console.log(err);
     }else{
         console.log(arguments);
-        //在此处强制回滚，调用之后该事务中的后续步骤和回调将都不被执行
+        //在此处强制回滚，调用之后除非发生错误否则该事务中的后续步骤和回调将都不被执行（为什么存在后续步骤及其回调呢？因为是异步的，下面代码中的“trans1.commit”其实已经在堆栈中了）
         this.rollback(function(err){
             if(err){
                 console.log(err);
@@ -551,9 +556,10 @@ trans1.sql('insert into test_table(c1)values(\'insert_value2\')',function(err){
 });
 trans1.sql('insert into test_table(c1)values(\'insert_value3\')',function(err){
     if(err){
+        //SQL执行发生错误是不需要执行rollback的，因为i-mysql已经帮您自动回滚了
         console.log(err);
     }else{
-        //如果因流程控制需要，此处也可以调用commit或者rollback，调用之后该事务中的后续步骤和回调将都不被执行
+        //如果因流程控制需要，此处也可以调用commit或者rollback，调用之后除非发生错误否则该事务中的后续步骤和回调将都不被执行（为什么存在后续步骤及其回调呢？因为是异步的，下面代码中的“trans1.commit”其实已经在堆栈中了）
         console.log(arguments);
     }
 });
