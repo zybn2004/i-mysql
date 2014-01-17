@@ -110,6 +110,10 @@ Controller.prototype.intervalQueueForTransaction=function(){
                 trans._doing = false;
                 trans._autoCommit = true;
                 continue;
+            }else{
+                trans._doing = false;
+                trans._autoCommit = true;
+                continue;
             }
         }
 
