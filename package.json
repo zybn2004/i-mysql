@@ -12,9 +12,9 @@
   "description": "A powerful nodejs module for mysql, we called be i-mysql.Including single table CRUD, transaction operations, multi- database switch function, etc.    i-mysql 是将mysql进行二次封装的一个强大的nodejs模块，主要包括了单表的CRUD、事务相关操作、多数据库切换等功能！",
   "main": "index.js",
   "dependencies": {
-    "big-integer": "~1.1.5",
-    "moment": "~2.5.0",
-    "mysql": "~2.0.0-rc2"
+    "big-integer": ">=1.1.5",
+    "moment": ">=2.5.0",
+    "mysql": ">=2.0.1"
   },
   "devDependencies": {},
   "scripts": {
