@@ -11,6 +11,7 @@ var currentControllerGlobal = null;
 var currentDbIndexGlobal = null;
 
 var controllerPool = [];
+var configs = null;
 
 function checkDBIndex(dbIndex){
     if(!isConfiged){
@@ -31,16 +32,39 @@ function checkDBIndex(dbIndex){
     return Number(dbIndex);
 }
 
-module.exports.config = function(configs){
+function _cloneObject(obj){
+    if(!obj||(obj.constructor!==Array&&obj.constructor!==Object)){
+        return obj;
+    }
+    var o = obj.constructor === Array ? [] : {};
+    for(var i in obj){
+        if(obj.hasOwnProperty(i)){
+            o[i] = typeof obj[i] === "object" ? _cloneObject(obj[i]) : obj[i];
+        }
+    }
+    return o;
+}
+
+module.exports.config = function(_configs){
+    if(_configs==undefined){
+        if(!isConfiged){
+            return null;
+        }else{
+            return _cloneObject(configs);
+        }
+    }
+
     if(isConfiged){
         console.log(npmPackageName+' has configed! Not allow to config again!');
         throw new Error(npmPackageName+' has configed! Not allow to config again!');
         return null;
     }
-    if(typeof configs == "function"){
-        configs = configs();
-
+    if(typeof _configs == "function"){
+        configs = _configs();
+    }else{
+        configs = _configs;
     }
+    configs = _cloneObject(configs);
     if(util.isArray(configs)&&configs.length>1){
         var i=0;
         configs.forEach(function(config){
@@ -51,12 +75,12 @@ module.exports.config = function(configs){
             i++;
         });
     }else if((util.isArray(configs)&&configs.length==1)||(!util.isArray(configs)&&typeof configs == "object")){
-        var _config = configs;
+        var __config = configs;
         if(util.isArray(configs)){
-            _config = configs[0];
+            __config = configs[0];
         }
-        controllerPool.push(Controller.controller().setDbIndex(0).config(_config));
-        //controllerPool.push(require('./Controller').config(_config));
+        controllerPool.push(Controller.controller().setDbIndex(0).config(__config));
+        //controllerPool.push(require('./Controller').config(__config));
     }
     if(controllerPool.length>0){
         isConfiged = true;

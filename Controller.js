@@ -655,7 +655,7 @@ Controller.prototype.tableStruct=function(_table){
             }
             if(err){
                 self._logErr(err);
-                if(err.code=="ER_NO_SUCH_TABLE"){
+                if(err.code=="ER_NO_SUCH_TABLE"||err.code=="ER_NO_DB_ERROR"){
                     return false;
                 }
                 console.log('retry struct table after 1 second!');

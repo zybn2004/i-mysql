@@ -41,7 +41,7 @@ Table.prototype.struct = function(conn,cb){
             self._dequeueAll.call(self,new Error('the table '+self._tableName+' has been destroyed!'));
             self.emit('destroyed');
         }else{
-            if(err&&err.code=="ER_NO_SUCH_TABLE"){
+            if(err&&(err.code=="ER_NO_SUCH_TABLE"||err.code=="ER_NO_DB_ERROR")){
                 self._no_such_table = true;
                 self._no_such_table_error = err;
                 self._dequeueAll.call(self,err);
@@ -458,6 +458,42 @@ function _isObjectAndIsNotEmpty(obj){
     return flag;
 }
 
+function _freestyleFieldsFormat(freestyleFields){
+    var returnVal;
+    if(freestyleFields===undefined||freestyleFields===null){
+        returnVal = [];
+    }
+    if(typeof freestyleFields == 'string'){
+        returnVal = String(returnVal).trim();
+        if(returnVal==''){
+            returnVal = [];
+        }else{
+            returnVal = freestyleFields.split(",");
+            for(var i=0;i<returnVal.length;i++){
+                returnVal[i] = String(returnVal[i]).trim();
+            }
+            if(returnVal.length==1&&String(returnVal[0]).trim()==''){
+                returnVal = [];
+            }
+        }
+    }
+    return returnVal;
+}
+
+function _findFreestyleField(fieldName,freestyleFields){
+    var fieldName = this._escapeId(this._trimEscapeId(fieldName));
+    freestyleFields = freestyleFields||[];
+    var isFound = false;
+    for(var i=0;i<freestyleFields.length;i++){
+        var freestyleFieldName = this._escapeId(this._trimEscapeId(freestyleFields[i]));
+        if(freestyleFieldName==fieldName){
+            isFound = true;
+            break;
+        }
+    }
+    return isFound;
+}
+
 function _joinInsertSql(options,cb){
     //data fields values
 
@@ -466,6 +502,7 @@ function _joinInsertSql(options,cb){
     var data = options['data'];
     var fields = options['fields'];
     var values = options['values'];
+    var freestyleFields = _freestyleFieldsFormat(options['freestyleFields']);
 
     var table_fields = this._fields;
     var insertFields = [];
@@ -483,13 +520,18 @@ function _joinInsertSql(options,cb){
                     break;
                 }
                 var value = data[i];
-                var checkResult = Validator.check(value,fieldStruct);
-                if(checkResult){
-                    err = checkResult;
-                    break;
+                if(_findFreestyleField.call(this,fieldName,freestyleFields)){
+                    insertFields.push(fieldName);
+                    insertValues.push(value);
+                }else{
+                    var checkResult = Validator.check(value,fieldStruct);
+                    if(checkResult){
+                        err = checkResult;
+                        break;
+                    }
+                    insertFields.push(fieldName);
+                    insertValues.push(this._escape(value));
                 }
-                insertFields.push(fieldName);
-                insertValues.push(this._escape(value));
             }
         }
         if(!err){
@@ -507,12 +549,16 @@ function _joinInsertSql(options,cb){
         }
         if(typeof fields == 'string'){
             fields = String(fields).trim();
-            fields = fields.split(",");
-            for(var i=0;i<fields.length;i++){
-                fields[i] = String(fields[i]).trim();
-            }
-            if(fields.length==1&&String(fields[0]).trim()==''){
+            if(fields==''){
                 fields = [];
+            }else{
+                fields = fields.split(",");
+                for(var i=0;i<fields.length;i++){
+                    fields[i] = String(fields[i]).trim();
+                }
+                if(fields.length==1&&String(fields[0]).trim()==''){
+                    fields = [];
+                }
             }
         }
         if(!Util.isArray(fields)||!Util.isArray(values)){
@@ -565,12 +611,16 @@ function _joinInsertSql(options,cb){
                             break;
                         }
                         var value = values[i];
-                        var checkResult = Validator.check(value,fieldStruct);
-                        if(checkResult){
-                            err = checkResult;
-                            break;
+                        if(_findFreestyleField.call(this,fieldName,freestyleFields)){
+                            t_insertValues.push(value);
+                        }else{
+                            var checkResult = Validator.check(value,fieldStruct);
+                            if(checkResult){
+                                err = checkResult;
+                                break;
+                            }
+                            t_insertValues.push(this._escape(value));
                         }
-                        t_insertValues.push(this._escape(value));
                     }
                     insertValues.push(t_insertValues);
                 }else{
@@ -584,12 +634,16 @@ function _joinInsertSql(options,cb){
                                 break;
                             }
                             var value = values[j][i];
-                            var checkResult = Validator.check(value,fieldStruct);
-                            if(checkResult){
-                                err = checkResult;
-                                break;
+                            if(_findFreestyleField.call(this,fieldName,freestyleFields)){
+                                t_insertValues.push(value);
+                            }else{
+                                var checkResult = Validator.check(value,fieldStruct);
+                                if(checkResult){
+                                    err = checkResult;
+                                    break;
+                                }
+                                t_insertValues.push(this._escape(value));
                             }
-                            t_insertValues.push(this._escape(value));
                         }
                         insertValues.push(t_insertValues);
                     }
@@ -661,6 +715,7 @@ function _joinSelectSql(options,cb){
     var groupBy = options['groupBy'];
     var orderBy = options['orderBy'];
     var limit = options['limit'];
+    var freestyleFields = _freestyleFieldsFormat(options['freestyleFields']);
     var table_fields = this._fields;
 
     sql.push('select ');
@@ -696,9 +751,13 @@ function _joinSelectSql(options,cb){
         }
         if(typeof fields == 'string'){
             fields = String(fields).trim();
-            fields = fields.split(",");
-            for(var i=0;i<fields.length;i++){
-                fields[i] = String(fields[i]).trim();
+            if(fields==''){
+                fields = [];
+            }else{
+                fields = fields.split(",");
+                for(var i=0;i<fields.length;i++){
+                    fields[i] = String(fields[i]).trim();
+                }
             }
         }
         if(!Util.isArray(fields)){
@@ -776,12 +835,16 @@ function _joinSelectSql(options,cb){
                         break;
                     }
                     var value = where[i];
-                    var checkResult = Validator.check(value,fieldStruct);
-                    if(checkResult){
-                        err = checkResult;
-                        break;
+                    if(_findFreestyleField.call(this,fieldName,freestyleFields)){
+                        whereFieldset.push(fieldName+'='+value);
+                    }else{
+                        var checkResult = Validator.check(value,fieldStruct);
+                        if(checkResult){
+                            err = checkResult;
+                            break;
+                        }
+                        whereFieldset.push(fieldName+'='+this._escape(value));
                     }
-                    whereFieldset.push(fieldName+'='+this._escape(value));
                 }
             }
             sql.push(whereFieldset.join(''));
@@ -958,6 +1021,7 @@ function _joinUpdateSql(options,cb){
     var fields = options['fields'];
     var values = options['values'];
     var where = options['where'];
+    var freestyleFields = _freestyleFieldsFormat(options['freestyleFields']);
     if(!where){
         where = '';
     }
@@ -978,13 +1042,17 @@ function _joinUpdateSql(options,cb){
                     break;
                 }
                 var value = data[i];
-                var checkResult = Validator.check(value,fieldStruct);
-                if(checkResult){
-                    err = checkResult;
-                    break;
-                }
+                if(_findFreestyleField.call(this,fieldName,freestyleFields)){
+                    updateFieldset.push(fieldName+'='+value);
+                }else{
+                    var checkResult = Validator.check(value,fieldStruct);
+                    if(checkResult){
+                        err = checkResult;
+                        break;
+                    }
 
-                updateFieldset.push(fieldName+'='+this._escape(value));
+                    updateFieldset.push(fieldName+'='+this._escape(value));
+                }
             }
         }
 
@@ -997,9 +1065,13 @@ function _joinUpdateSql(options,cb){
         }
         if(typeof fields == 'string'){
             fields = String(fields).trim();
-            fields = fields.split(",");
-            for(var i=0;i<fields.length;i++){
-                fields[i] = String(fields[i]).trim();
+            if(fields==''){
+                fields = [];
+            }else{
+                fields = fields.split(",");
+                for(var i=0;i<fields.length;i++){
+                    fields[i] = String(fields[i]).trim();
+                }
             }
         }
         if(!Util.isArray(fields)||!Util.isArray(values)){
@@ -1025,12 +1097,16 @@ function _joinUpdateSql(options,cb){
                     break;
                 }
                 var value = values[i];
-                var checkResult = Validator.check(value,fieldStruct);
-                if(checkResult){
-                    err = checkResult;
-                    break;
+                if(_findFreestyleField.call(this,fieldName,freestyleFields)){
+                    updateFieldset.push(fieldName+'='+value);
+                }else{
+                    var checkResult = Validator.check(value,fieldStruct);
+                    if(checkResult){
+                        err = checkResult;
+                        break;
+                    }
+                    updateFieldset.push(fieldName+'='+this._escape(value));
                 }
-                updateFieldset.push(fieldName+'='+this._escape(value));
             }
 
         }
@@ -1065,12 +1141,16 @@ function _joinUpdateSql(options,cb){
                         break;
                     }
                     var value = where[i];
-                    var checkResult = Validator.check(value,fieldStruct);
-                    if(checkResult){
-                        err = checkResult;
-                        break;
+                    if(_findFreestyleField.call(this,fieldName,freestyleFields)){
+                        whereFieldset.push(fieldName+'='+value);
+                    }else{
+                        var checkResult = Validator.check(value,fieldStruct);
+                        if(checkResult){
+                            err = checkResult;
+                            break;
+                        }
+                        whereFieldset.push(fieldName+'='+this._escape(value));
                     }
-                    whereFieldset.push(fieldName+'='+this._escape(value));
                 }
             }
             sql.push(whereFieldset.join(''));
@@ -1093,6 +1173,7 @@ function _joinDeleteSql(options,cb){
     var err = null;
     var sql = [];
     var where = options['where'];
+    var freestyleFields = _freestyleFieldsFormat(options['freestyleFields']);
     if(!where){
         where = '';
     }
@@ -1127,12 +1208,16 @@ function _joinDeleteSql(options,cb){
                     break;
                 }
                 var value = where[i];
-                var checkResult = Validator.check(value,fieldStruct);
-                if(checkResult){
-                    err = checkResult;
-                    break;
+                if(_findFreestyleField.call(this,fieldName,freestyleFields)){
+                    whereFieldset.push(fieldName+'='+value);
+                }else{
+                    var checkResult = Validator.check(value,fieldStruct);
+                    if(checkResult){
+                        err = checkResult;
+                        break;
+                    }
+                    whereFieldset.push(fieldName+'='+this._escape(value));
                 }
-                whereFieldset.push(fieldName+'='+this._escape(value));
             }
         }
         sql.push(whereFieldset.join(''));

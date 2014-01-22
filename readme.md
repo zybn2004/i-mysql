@@ -80,14 +80,18 @@ npm install i-mysql
 
 ##一、数据库配置
 i-mysql必须在执行config之后才可以进行其它操作，且只能config一次。<br />
-function config(configs) config方法可接收如下例子中的数组，也可以是只有单个数据库配置的json对象（这个时候就不存在数据库切换的情况了）。<br />
+function config(configs) config方法的configs参数可以为空（为空时config方法会返回上次调用config方法成功时的configs参数），也可接收如下例子中的数组，当然也可以是只有单个数据库配置的json对象（这个时候就不存在数据库切换的情况了）。<br />
 
 ```js
 var iMysql = require('i-mysql');
+//配置
 iMysql.config([
     {host:'127.0.0.1',port:3306,database:'db0',user:'root',password:'123456'},
     {host:'127.0.0.1',port:3306,database:'db1',user:'root',password:'123456'}
 ]);
+
+//获取配置(可用来判断是否已经配置过i-mysql)
+console.log(iMysql.config());
 ```
 
 
@@ -204,16 +208,16 @@ db1Obj.sql('select c1 from test_table where id = ?','3',function(err){
 * 3)从table对象获取所在数据库索引，function table.getDbIndex()。
 * 4)table对象切换数据库，function table.switch(dbIndex) switch方法支持数字型参数或者一个返回数字型数据的function参数。
 * 5)table对象insert数据，function table.insert(options,cb) insert方法支持2个参数：
-  * ①可选参数options：{data:...,fields:...,values:...}，data优先与field和values，data为如{'字段':字段值}的json对象，fields和values配套使用，其中fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，values表示对应的值(可支持如['字段值','字段值']的数组或者[['字段值','字段值1'],['字段值','字段值2']]这样的二维数组从而进行批量插入)。
+  * ①可选参数options：{data:...,fields:...,values:...,freestyleFields:...}，data优先与field和values，data为如{'字段':字段值}的json对象，fields和values配套使用，其中fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，values表示对应的值(可支持如['字段值','字段值']的数组或者[['字段值','字段值1'],['字段值','字段值2']]这样的二维数组从而进行批量插入)，freestyleFields表示那些字段对应的值不需要做合法性校验和escape的自由字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，其作用在data和values中有效。
   * ②可选参数cb：执行sql之后的回调函数，该回调函数的参数同mysql包的query方法中cb的参数。
 * 6)table对象select数据，function table.select(options,cb) select方法支持2个参数：
-  * ①可选参数options：{fieldset:...,fields:...,where:...,groupBy:...,orderBy:...,limit:...}，其中fieldset可以为字符串，fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串，为空时默认查询所有字段)，where支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串（where为json对象时只支持and的拼接），groupBy可以为数组对象如['字段1','字段2']，orderBy可以为json对象如{'字段1':'desc','字段2':''}，而limit可以为json对象如{start:10,total:20}也可以为[10,20]，它们都支持字符串，limit还支持数字（此时表示的即是total的值）。
+  * ①可选参数options：{fieldset:...,fields:...,where:...,groupBy:...,orderBy:...,limit:...,freestyleFields:...}，其中fieldset可以为字符串，fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串，为空时默认查询所有字段)，where支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串（where为json对象时只支持and的拼接），groupBy可以为数组对象如['字段1','字段2']，orderBy可以为json对象如{'字段1':'desc','字段2':''}，limit可以为json对象如{start:10,total:20}也可以为[10,20]，它们都支持字符串，limit还支持数字（此时表示的即是total的值），freestyleFields表示那些字段对应的值不需要做合法性校验和escape的自由字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，其作用在where中有效。
   * ②可选参数cb：执行sql之后的回调函数，该回调函数的参数同mysql包的query方法中cb的参数。
 * 7)table对象update数据，function table.update(options,cb) update方法支持2个参数：
-  * ①必填参数options：{data:...,fields:...,values:...,where:...}，data优先与field和values，data为如{'字段':字段值}的json对象，fields和values配套使用，其中fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，values表示对应的值(可支持如['字段值','字段值']的数组)，where支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串（where为json对象时只支持and的拼接）。
+  * ①必填参数options：{data:...,fields:...,values:...,where:...,freestyleFields:...}，data优先与field和values，data为如{'字段':字段值}的json对象，fields和values配套使用，其中fields表示字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，values表示对应的值(可支持如['字段值','字段值']的数组)，where支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串（where为json对象时只支持and的拼接），freestyleFields表示那些字段对应的值不需要做合法性校验和escape的自由字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，其作用在data、values和where中有效。
   * ②可选参数cb：执行sql之后的回调函数，该回调函数的参数同mysql包的query方法中cb的参数。
 * 8)table对象delete数据，function table.delete(options,cb) delete方法支持2个参数：
-  * ①可选参数options：{where:...}，where支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串（where为json对象时只支持and的拼接）。
+  * ①可选参数options：{where:...,freestyleFields:...}，where支持如{'字段1':字段值,'字段2':字段值}的json对象或者字符串（where为json对象时只支持and的拼接），freestyleFields表示那些字段对应的值不需要做合法性校验和escape的自由字段(可支持如['字段1']的数组或者以逗号间隔的字符串)，其作用在where中有效。
   * ②可选参数cb：执行sql之后的回调函数，该回调函数的参数同mysql包的query方法中cb的参数。
 
 ###1.table对象获得途径
@@ -271,8 +275,8 @@ testTable.switch(0);
 
 ```js
 var testTable = iMysql.table('test_table');
-//使用data插入
-testTable.insert({data:{id:1,c1:'t1'}},function(err){
+//使用data插入(注意其中的freestyleFields的用法，它指定了data中的create_time字段的值是自由的即i-mysql是不会对它进行值合法性校验和escape的，table的insert、select、update、delete中都支持类似的freestyleFields用法，详细请看之前table对象中的介绍)
+testTable.insert({data:{id:1,c1:'t1',create_time:'CURDATE()'},freestyleFields:'create_time'},function(err){
     if(err){
         console.log(err);
     }else{
@@ -280,7 +284,7 @@ testTable.insert({data:{id:1,c1:'t1'}},function(err){
     }
 });
 //配套使用fields和values插入
-testTable.insert({fields:['id','c1'],values:[2,'t2']},function(err){
+testTable.insert({fields:['id','c1','create_time'],values:[2,'t2','CURDATE()'],freestyleFields:['create_time']},function(err){
     if(err){
         console.log(err);
     }else{
@@ -288,7 +292,7 @@ testTable.insert({fields:['id','c1'],values:[2,'t2']},function(err){
     }
 });
 //批量插入
-testTable.insert({fields:['id','c1'],values:[[3,'t3'],[4,'t4']]},function(err){
+testTable.insert({fields:['id','c1','create_time'],values:[[3,'t3','CURDATE()'],[4,'t4','CURDATE()']],freestyleFields:'create_time'},function(err){
     if(err){
         console.log(err);
     }else{
