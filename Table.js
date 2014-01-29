@@ -34,14 +34,17 @@ function Table(tableName,controller){
     this._doing = 0;
 }
 
-Table.prototype.struct = function(conn,cb){
+Table.prototype.struct = function(conn,cb,_err){
     var self = this;
     _getStruct.call(self,conn,function(err,result){
+        if(!err&&_err){
+            err = _err;
+        }
         if(self.isDestroyed()){
             self._dequeueAll.call(self,new Error('the table '+self._tableName+' has been destroyed!'));
             self.emit('destroyed');
         }else{
-            if(err&&(err.code=="ER_NO_SUCH_TABLE"||err.code=="ER_NO_DB_ERROR")){
+            if(err&&(err.code=="ER_NO_SUCH_TABLE"||err.code=="ER_NO_DB_ERROR"||err.code=="ECONNREFUSED")){
                 self._no_such_table = true;
                 self._no_such_table_error = err;
                 self._dequeueAll.call(self,err);
@@ -413,7 +416,13 @@ function _sql(err,opType,options,cb){
 
 function _getStruct (conn,cb){
     var sql = 'SHOW COLUMNS FROM '+this._tableName;
-    conn.query(sql, null, cb);
+    if(!conn){
+        process.nextTick(function(){
+            cb();
+        });
+    }else{
+        conn.query(sql, null, cb);
+    }
 }
 
 function _structColumns(struct){

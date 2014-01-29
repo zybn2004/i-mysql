@@ -638,15 +638,23 @@ Controller.prototype.tableStruct=function(_table){
             return false;
         }
 
+        var newError = null;
         if(conErr){
             if(connection){
                 connection.release();
             }
             self._logErr(conErr);
-            console.log('retry struct table after 1 second!');
-            setTimeout(function(){self.tableStruct.call(self,_table)},1000);
-            return false;
+
+            if(conErr.code=="ER_NO_DB_ERROR"||conErr.code=="ECONNREFUSED"){
+                newError = conErr;
+            }else{
+                console.log('retry struct table after 1 second!');
+                setTimeout(function(){self.tableStruct.call(self,_table)},1000);
+                return false;
+            }
+
         }
+
 
 
         _table.struct.call(_table,connection,function(err){
@@ -655,13 +663,13 @@ Controller.prototype.tableStruct=function(_table){
             }
             if(err){
                 self._logErr(err);
-                if(err.code=="ER_NO_SUCH_TABLE"||err.code=="ER_NO_DB_ERROR"){
+                if(err.code=="ER_NO_SUCH_TABLE"||err.code=="ER_NO_DB_ERROR"||err.code=="ECONNREFUSED"){
                     return false;
                 }
                 console.log('retry struct table after 1 second!');
                 setTimeout(function(){self.tableStruct.call(self,_table)},1000);
             }
-        });
+        },newError);
     }.bind(self));
 }
 
