@@ -833,9 +833,9 @@ function _joinSelectSql(options,cb){
                     var _i = String(i).trim();
                     if(isFirst){
                         isFirst = false;
-                        sql.push(' where ');
+                        whereFieldset.push(' where ');
                     }else{
-                        sql.push(' and ');
+                        whereFieldset.push(' and ');
                     }
                     var fieldName = this._escapeId(this._trimEscapeId(_i));
                     var fieldStruct = table_fields[fieldName];
@@ -1139,9 +1139,9 @@ function _joinUpdateSql(options,cb){
                     var _i = String(i).trim();
                     if(isFirst){
                         isFirst = false;
-                        sql.push(' where ');
+                        whereFieldset.push(' where ');
                     }else{
-                        sql.push(' and ');
+                        whereFieldset.push(' and ');
                     }
                     var fieldName = this._escapeId(this._trimEscapeId(_i));
                     var fieldStruct = table_fields[fieldName];
@@ -1206,9 +1206,9 @@ function _joinDeleteSql(options,cb){
                 var _i = String(i).trim();
                 if(isFirst){
                     isFirst = false;
-                    sql.push(' where ');
+                    whereFieldset.push(' where ');
                 }else{
-                    sql.push(' and ');
+                    whereFieldset.push(' and ');
                 }
                 var fieldName = this._escapeId(this._trimEscapeId(_i));
                 var fieldStruct = table_fields[fieldName];
