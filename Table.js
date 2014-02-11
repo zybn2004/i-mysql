@@ -992,7 +992,7 @@ function _joinSelectSql(options,cb){
                     newLimit['total'] = li;
                 }
             }
-            if(!err&&_isObjectAndIsNotEmpty(newLimit)){
+            if(!err&&!_isObjectAndIsNotEmpty(newLimit)){
                 err = new Error(this._tableName+' limit param invalid');
             }
             if(!err){
