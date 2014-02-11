@@ -988,7 +988,7 @@ function _joinSelectSql(options,cb){
                 }
                 if(/start/ig.test(_i)){
                     newLimit['start'] = li;
-                }else if(/total/ig.text(_i)){
+                }else if(/total/ig.test(_i)){
                     newLimit['total'] = li;
                 }
             }
